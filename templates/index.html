@@ -1,0 +1,207 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+  <title>Morrowland OCEAN 243 Archetype Personality Test</title>  
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">  
+  <style>  
+    body {  
+      margin: 0;  
+      font-family: 'Poppins', sans-serif;  
+      color: #222;  
+      text-align: center;  
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3, #bafff3);  
+      background-size: 600% 600%;  
+      animation: softFlow 50s ease infinite;  /* slowed from 18s to 30s */  
+    }  
+  
+    @keyframes softFlow {  
+      0% { background-position: 0% 50%; }  
+      50% { background-position: 100% 50%; }  
+      100% { background-position: 0% 50%; }  
+    }  
+  
+    header.soft-header {  
+      background: rgba(255, 255, 255, 0.7);  
+      backdrop-filter: blur(10px);  
+      padding: 2rem 1rem;  
+      border-bottom: 2px solid rgba(255,255,255,0.4);  
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);  
+    }  
+  
+    header h1 {  
+      font-size: 2rem;  
+      margin: 0;  
+      color: #444;  
+      font-weight: 700;  
+    }  
+  
+    header p {  
+      font-style: italic;  
+      color: #666;  
+      margin-top: 0.3rem;  
+    }  
+  
+    main {  
+      padding: 1rem;  
+    }  
+  
+    .block {  
+      max-width: 900px;  
+      margin: 2rem auto;  
+      background: rgba(255,255,255,0.9);  
+      border-radius: 20px;  
+      padding: 1.5rem;  
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);  
+    }  
+  
+    .block h2 {  
+      color: #333;  
+      margin-bottom: 1rem;  
+      font-weight: 600;  
+    }  
+  
+    .block p {  
+      color: #444;  
+      line-height: 1.6;  
+      margin: 0.6rem 0;  
+    }  
+  
+    .trait-grid {  
+      display: grid;  
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));  
+      gap: 1rem;  
+      text-align: center;  
+    }  
+  
+    .trait-card {  
+      padding: 1rem;  
+      border-radius: 16px;  
+      color: white;  
+      font-weight: 600;  
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);  
+    }  
+  
+    .trait-card h3 {  
+      margin-bottom: 0.5rem;  
+    }  
+  
+    .trait-card p {  
+      font-weight: 400;  
+      color: #fff;  
+    }  
+  
+    /* Kidcore palette */  
+    .openness { background: #ff6f91; }  
+    .conscientiousness { background: #feca57; }  
+    .extraversion { background: #54a0ff; }  
+    .agreeableness { background: #1dd1a1; }  
+    .neuroticism { background: #9b5de5; }  
+  
+    .cta {  
+      text-align: center;  
+    }  
+  
+    .button.start-btn {  
+      display: inline-block;  
+      background: linear-gradient(135deg, #fcb045, #fd1d1d, #833ab4, #39ff14);  
+      background-size: 400% 400%;  
+      animation: pulse 6s ease infinite;  
+      color: white;  
+      text-decoration: none;  
+      padding: 1rem 3rem;  
+      border-radius: 50px;  
+      font-size: 1.3rem;  
+      font-weight: 700;  
+      transition: transform 0.2s ease;  
+      margin-top: 1rem;  
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);  
+    }  
+  
+    .button.start-btn:hover {  
+      transform: scale(1.05);  
+    }  
+  
+    @keyframes pulse {  
+      0% { background-position: 0% 50%; }  
+      50% { background-position: 100% 50%; }  
+      100% { background-position: 0% 50%; }  
+    }  
+  
+    footer {  
+      text-align: center;  
+      padding: 1.2rem;  
+      font-size: 0.9rem;  
+      background: rgba(255,255,255,0.7);  
+      border-top: 2px solid #eee;  
+      color: #444;  
+    }  
+  
+    footer a {  
+      color: #ff5f6d;  
+      font-weight: 500;  
+      text-decoration: none;  
+    }  
+  
+    footer a:hover {  
+      text-decoration: underline;  
+    }  
+  </style>  
+</head>  
+  
+<body>  
+  <!-- HEADER -->  
+  <header class="soft-header">  
+    <h1>Morrowland OCEAN 243 Archetype Test</h1>  
+    <p><em>Discover the neuroscience of your personality.</em></p>  
+  </header>  
+  
+  <!-- MAIN CONTENT -->  
+  <main>  
+    <section class="block intro">  
+      <h2>🧬 What is the OCEAN Model?</h2>  
+      <p><strong>OCEAN</strong> stands for <em>Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism</em> — the five foundational dimensions of human personality recognized by modern psychology and neuroscience.</p>  
+      <p><strong>Morrowland’s 243 Archetype Test</strong> transforms these measurable traits into <strong>243 scientific archetypes</strong>, built from data, psychometrics, and neural research — revealing the true shape of your mind.</p>  
+    </section>  
+  
+    <section class="block science">  
+      <h2>🔬 Grounded in Science</h2>  
+      <p>Inspired by the <strong>Cambridge Psychometrics Centre</strong> and <strong>Personality Neuroscience Journal</strong>, our model reflects measurable brain-based patterns of cognition and emotion.</p>  
+      <p>Every archetype is grounded in empirical studies of dopamine circuits, limbic regulation, and executive control — bridging neuroscience with personality psychology.</p>  
+    </section>  
+  
+    <section class="block colorful-grid">  
+      <h2>🌈 The Five Dimensions</h2>  
+      <div class="trait-grid">  
+        <div class="trait-card openness"><h3>🧠 Openness</h3><p>Imagination, creativity, curiosity.</p></div>  
+        <div class="trait-card conscientiousness"><h3>⚙️ Conscientiousness</h3><p>Structure, focus, and dependability.</p></div>  
+        <div class="trait-card extraversion"><h3>🌞 Extraversion</h3><p>Energy, connection, and expressiveness.</p></div>  
+        <div class="trait-card agreeableness"><h3>💗 Agreeableness</h3><p>Empathy, compassion, and cooperation.</p></div>  
+        <div class="trait-card neuroticism"><h3>🌧 Neuroticism</h3><p>Emotional instability or sensitivity.</p></div>  
+      </div>  
+    </section>  
+  
+    <section class="block mission">  
+      <h2>🧩 Why 243 Archetypes?</h2>  
+      <p>Each OCEAN trait has three levels — Low, Medium, High. Combine all five: <strong>3⁵ = 243 archetypes</strong> representing the full spectrum of personality architecture.</p>  
+      <p>Your unique combination forms an identifiable <strong>psychological archetype</strong> with patterns seen across research data and real-world cognition.</p>  
+    </section>  
+  
+    <section class="block cta">  
+      <h2>✨ Begin Your Discovery</h2>  
+      <p>Answer 50 scientifically calibrated questions to uncover your archetype.</p>  
+      <a href="/quiz" class="button start-btn">Take the Test</a>  
+    </section>  
+  </main>  
+  
+  <footer>  
+    <p>© 2025 Morrowland Psychology Research</p>  
+    <div class="socials">  
+      <a href="https://www.instagram.com/morr.ow777777" target="_blank">Instagram</a> |  
+      <a href="https://www.tiktok.com/@morrowland57" target="_blank">TikTok</a>  
+    </div>  
+  </footer>  
+</body>  
+</html>

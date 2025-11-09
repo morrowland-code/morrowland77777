@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Detailed Archetype Report</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3, #bafff3);
+      background-size: 800% 800%;
+      animation: softFlow 20s ease infinite;
+      color: #222;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes softFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 5em auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 3em;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(8px);
+    }
+
+    #gate p {
+      font-size: 1.3em;
+      font-weight: 500;
+      color: #444;
+      margin: 2em 0;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .hidden { display: none; }
+
+    footer {
+      text-align: center;
+      margin-top: 3em;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    footer a {
+      color: #7b5dfd;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="gate">
+      <p>🔍 Verifying payment and generating your personalized report...</p>
+    </div>
+    <div id="report" class="hidden"></div>
+  </div>
+
+  <footer>
+    <p>© 2025 Morrowland Psychology Research</p>
+    <p>
+      <a href="https://www.instagram.com/kendallm16" target="_blank">Instagram</a> |
+      <a href="https://www.tiktok.com/@neptunee7777" target="_blank">TikTok</a>
+    </p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='report.js') }}"></script>
+</body>
+</html>
