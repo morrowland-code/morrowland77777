@@ -33,14 +33,16 @@ print(f"[CONFIG] FLASK_ENV={FLASK_ENV}, DOMAIN={DOMAIN}, USE_SECURE_COOKIES={USE
 # ------------------------------------------------------------------
 # 2️⃣ Parse morrowland 243.docx
 # ------------------------------------------------------------------
-def load_detailed_archetypes_docx(file_path: str):
+def load_detailed_archetypes_text(file_path: str):
     if not os.path.exists(file_path):
         print(f"[ERROR] File not found: {file_path}")
         return {}, {}, {}
 
-    doc = Document(file_path)
-    raw_lines = [p.text for p in doc.paragraphs]
-    lines = [line.strip() for line in raw_lines]
+    with open(file_path, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+
 
     header_re = re.compile(
         r"(?i)openness\s*[:\-–—]?\s*(low|medium|high).*?"
@@ -88,7 +90,7 @@ def load_detailed_archetypes_docx(file_path: str):
                 current_name = f"Unknown_{i}"
         else:
             if current_code:
-                buffer.append(raw_lines[i])
+                buffer.append(lines[i])
         i += 1
 
     flush()
@@ -99,9 +101,9 @@ def load_detailed_archetypes_docx(file_path: str):
 # 3️⃣ Load Data
 # ------------------------------------------------------------------
 base_dir = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(base_dir, "morrowland 243.docx")
+file_path = os.path.join(base_dir, "archetypes_cleaned.txt")
 
-DETAILED_BY_CODE, DETAILED_BY_NAME, CODE_TO_NAME = load_detailed_archetypes_docx(file_path)
+DETAILED_BY_CODE, DETAILED_BY_NAME, CODE_TO_NAME = load_detailed_archetypes_text(file_path)
 
 
 def load_archetypes(base_map):
@@ -157,13 +159,18 @@ def generate_free_code():
     return code
 
 
-def verify_free_code(code: str):
+def verify_free_code(code: str, owner_key: str = ""):
+    if owner_key == OWNER_SECRET:
+        print(f"[👑 OWNER BYPASS CODE ACCEPTED]: {code}")
+        return True
+
     codes = load_free_codes()
     if code in codes and not codes[code]["used"]:
         codes[code]["used"] = True
         save_free_codes(codes)
         print(f"[✅ FREE CODE ACCEPTED]: {code}")
         return True
+
     print(f"[❌ INVALID/USED CODE]: {code}")
     return False
 
@@ -200,21 +207,28 @@ def make_free_code():
     return jsonify({"new_code": code})
 
 
-# ✅ Verify free codes from quiz
 @app.route("/verify-free-code", methods=["POST"])
 def api_verify_free_code():
     data = request.get_json() or {}
     code = (data.get("code") or "").strip().upper()
+    owner_key = (data.get("owner_key") or "").strip()
+
     if not code:
         return jsonify({"valid": False, "error": "No code provided."}), 400
 
-    if verify_free_code(code):
-        # mark this session as paid – DO NOT overwrite latest_code here
-        session["paid"] = True
+    if verify_free_code(code, owner_key=owner_key):
+        code = session.get("latest_code")
+
+        unlocked = session.get("unlocked_codes", [])
+
+        if code and code not in unlocked:
+            unlocked.append(code)
+
+        session["unlocked_codes"] = unlocked
+
         return jsonify({"valid": True})
 
     return jsonify({"valid": False, "error": "Invalid or already used."}), 400
-
 
 # 🧠 Save quiz code to session (from frontend)
 @app.route("/api/set-latest-code", methods=["POST"])
@@ -266,17 +280,89 @@ def create_checkout_session():
         print("Stripe error:", e)
         return f"Stripe session creation failed: {e}", 500
 
+@app.route("/get-archetype-by-name")
+def get_by_name():
+    name = request.args.get("name")
+    return DETAILED_BY_NAME.get(name, "Not found")
+
+@app.route("/browse-by-traits")
+def browse_by_traits():
+    return render_template("browse_by_traits.html")
+
+@app.route("/select-by-traits", methods=["POST"])
+def select_by_traits():
+    O = (request.form.get("openness") or "").strip()
+    C = (request.form.get("conscientiousness") or "").strip()
+    E = (request.form.get("extraversion") or "").strip()
+    A = (request.form.get("agreeableness") or "").strip()
+    N = (request.form.get("neuroticism") or "").strip()
+
+    key = f"{O}-{C}-{E}-{A}-{N}"
+
+    if key not in DETAILED_BY_CODE:
+        return f"Archetype not found for {key}", 404
+
+    session["latest_code"] = key
+
+    unlocked = session.get("unlocked_codes", [])
+    if key in unlocked:
+        return redirect("/report")
+
+    return redirect("/unlock-report")
+
+
+
+@app.route("/unlock-report")
+def unlock_report():
+    code = session.get("latest_code")
+    if not code:
+        return redirect("/browse")
+
+    archetype_name = ARCHETYPES.get(code, "Unknown Archetype")
+    return render_template("unlock_report.html", archetype=archetype_name, traits=code)
+
+
+
+@app.route("/test-archetype/<code>")
+def test_archetype(code):
+    result = DETAILED_BY_CODE.get(code)
+
+    if not result:
+        return "Not found"
+
+    return f"""
+    <h1>{CODE_TO_NAME.get(code, 'Unknown')}</h1>
+    <h2>{code}</h2>
+    <pre style="white-space: pre-wrap;">{result}</pre>
+    """
+
+
+@app.route("/get-archetype", methods=["POST"])
+def get_archetype():
+    data = request.json
+
+    O = data.get("openness")
+    C = data.get("conscientiousness")
+    E = data.get("extraversion")
+    A = data.get("agreeableness")
+    N = data.get("neuroticism")
+
+    key = f"{O}-{C}-{E}-{A}-{N}"
+
+    result = DETAILED_BY_CODE.get(key)
+
+    if not result:
+        return {"error": "Archetype not found"}, 404
+
+    return {
+        "code": key,
+        "archetype": CODE_TO_NAME.get(key),
+        "description": result
+    }
+
 
 @app.route("/purchase-success")
 def purchase_success():
-    """
-    This route is called only by Stripe's redirect.
-    We verify:
-      1. The session_id matches the one we stored.
-      2. The token matches the random one we stored.
-      3. Stripe says the session is actually PAID.
-    Manually typing /purchase-success will not work.
-    """
     session_id = request.args.get("session_id", "")
     token = request.args.get("token", "")
 
@@ -287,7 +373,6 @@ def purchase_success():
         print("[SECURITY] Invalid purchase-success attempt.")
         abort(403)
 
-    # Verify with Stripe that this checkout session is paid
     try:
         stripe_session = stripe.checkout.Session.retrieve(session_id)
         if stripe_session.payment_status != "paid":
@@ -297,19 +382,33 @@ def purchase_success():
         print("[Stripe verify error]", e)
         abort(403)
 
-    # All good — mark user as paid and clear transient checkout data
-    session["paid"] = True
+    code = session.get("latest_code")
+    unlocked = session.get("unlocked_codes", [])
+
+    if code and code not in unlocked:
+        unlocked.append(code)
+
+    session["unlocked_codes"] = unlocked
     session.pop("checkout_session_id", None)
     session.pop("checkout_token", None)
 
     return redirect("/report")
 
+@app.route("/debug-reset-session")
+def debug_reset_session():
+    session.clear()
+    return "Session cleared."
+
+
 
 # 🔒 Secure report route (with archetype name)
 @app.route("/report")
 def report():
-    if not session.get("paid"):
-        return redirect("/")
+    code = session.get("latest_code")
+    unlocked = session.get("unlocked_codes", [])
+
+    if not code or code not in unlocked:
+        return redirect("/unlock-report")
 
     code = session.get("latest_code", "Medium-Medium-Medium-Medium-Medium")
     archetype_name = ARCHETYPES.get(code, None)
@@ -329,13 +428,15 @@ def report():
         archetype=archetype_name,
         traits=code,
         sections={"Detailed Report": detailed_text},
-        quote="“Depth rewards patience.”",
     )
 
 
 @app.route("/api/render-report")
 def api_render_report():
-    if not session.get("paid"):
+    code = session.get("latest_code")
+    unlocked = session.get("unlocked_codes", [])
+
+    if not code or code not in unlocked:
         abort(403)
 
     code = session.get("latest_code", "Medium-Medium-Medium-Medium-Medium")
@@ -359,16 +460,52 @@ def api_render_report():
         quote="“Depth rewards patience.”",
     )
 
+@app.route("/browse")
+def browse():
+    return render_template("browse.html", ARCHETYPES=ARCHETYPES)
+
+
+@app.route("/select-archetype", methods=["POST"])
+def select_archetype():
+    code = (request.form.get("code") or "").strip()
+
+    if not code or code not in ARCHETYPES:
+        return redirect("/browse")
+
+    session["latest_code"] = code
+
+    unlocked = session.get("unlocked_codes", [])
+    if code in unlocked:
+        return redirect("/report")
+
+    return redirect("/unlock-report")
+
+
+@app.route("/reset-free-code")
+def reset_free_code():
+    key = request.args.get("key", "")
+    code = (request.args.get("code", "") or "").strip().upper()
+
+    if key != OWNER_SECRET:
+        abort(403)
+
+    codes = load_free_codes()
+
+    if code not in codes:
+        return jsonify({"success": False, "error": "Code not found"}), 404
+
+    codes[code]["used"] = False
+    save_free_codes(codes)
+
+    return jsonify({"success": True, "code": code, "used": False})
 
 @app.route("/api/download-report")
 def download_report():
-    if not session.get("paid"):
-        abort(403)
-
-    # Prefer the code in the session, but fall back to query param if needed
     code = session.get("latest_code") or request.args.get("code", "")
-    if not code:
-        abort(400)
+    unlocked = session.get("unlocked_codes", [])
+
+    if not code or code not in unlocked:
+        abort(403)
 
     name = ARCHETYPES.get(code, "Unknown")
     detailed_text = DETAILED_BY_CODE.get(code) or DETAILED_BY_NAME.get(name)
