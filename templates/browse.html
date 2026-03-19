@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Archetypes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3, #bafff3);
+      background-size: 800% 800%;
+      animation: softFlow 20s ease infinite;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    @keyframes softFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 3em auto;
+      background: rgba(255,255,255,0.92);
+      padding: 2em;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    #search {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 1.5em;
+    }
+
+    .archetype-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 1em;
+    }
+
+    .archetype-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1em;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: left;
+    }
+
+    .archetype-card h3 {
+      margin: 0 0 0.4em 0;
+      font-size: 1.05rem;
+    }
+
+    .archetype-card p {
+      margin: 0 0 0.8em 0;
+      color: #555;
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    .archetype-card button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #b6ff8c;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .archetype-card button:hover {
+      transform: scale(1.02);
+    }
+
+    .no-results {
+      margin-top: 1em;
+      color: #666;
+      display: none;
+    }
+
+    form {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Browse All Archetypes</h1>
+    <p>Type to search by archetype name or trait code.</p>
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Search by archetype name or traits like High Low Medium..."
+      autocomplete="off"
+    />
+
+
+    <div id="noResults" class="no-results">No matching archetypes found.</div>
+
+    <div id="archetypeList" class="archetype-list">
+      {% for code, name in ARCHETYPES.items() %}
+      <div
+        class="archetype-card"
+        data-name="{{ name|lower }}"
+        data-code="{{ code|lower }}"
+      >
+        <h3>{{ name }}</h3>
+        <p>{{ code }}</p>
+
+        <form method="POST" action="/select-archetype">
+          <input type="hidden" name="code" value="{{ code }}">
+          <button type="submit">Open Report</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById("search");
+    const list = document.getElementById("archetypeList");
+    const noResults = document.getElementById("noResults");
+    const cards = Array.from(document.querySelectorAll(".archetype-card"));
+
+    function normalize(text) {
+      return (text || "")
+        .toLowerCase()
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function scoreCard(card, query) {
+      const rawName = card.dataset.name || "";
+      const rawCode = card.dataset.code || "";
+
+      const name = normalize(rawName);
+      const code = normalize(rawCode);
+      const full = `${name} ${code}`;
+
+      if (!query) return 1;
+
+      let score = 0;
+
+      if (name === query) score += 1000;
+      if (code === query) score += 1000;
+
+      if (name.startsWith(query)) score += 500;
+      if (code.startsWith(query)) score += 500;
+
+      if (name.includes(query)) score += 250;
+      if (code.includes(query)) score += 250;
+      if (full.includes(query)) score += 150;
+
+      const words = query.split(" ").filter(Boolean);
+      let allWordsMatch = true;
+
+      for (const word of words) {
+        if (name.includes(word)) score += 40;
+        else if (code.includes(word)) score += 40;
+        else if (full.includes(word)) score += 20;
+        else allWordsMatch = false;
+      }
+
+      if (allWordsMatch && words.length > 1) score += 200;
+
+      return score;
+    }
+
+    function filterCards() {
+      const query = normalize(searchInput.value);
+      let visibleCount = 0;
+
+      const ranked = cards
+        .map(card => ({
+          card,
+          score: scoreCard(card, query)
+        }))
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      cards.forEach(card => {
+        card.style.display = "none";
+      });
+
+      ranked.forEach(item => {
+        item.card.style.display = "block";
+        list.appendChild(item.card);
+        visibleCount++;
+      });
+
+      noResults.style.display = visibleCount === 0 ? "block" : "none";
+    }
+
+    searchInput.addEventListener("input", filterCards);
+    filterCards();
+  </script>
+
+</body>
+</html>

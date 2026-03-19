@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ name }} – Morrowland Archetype Report</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3, #bafff3);
+      background-size: 700% 700%;
+      animation: softFlow 20s ease infinite;
+      color: #222;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    @keyframes softFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid rgba(255,255,255,0.6);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #7b5dfd;
+    }
+
+    header p.subtitle {
+      font-size: 1rem;
+      margin-top: 0.3rem;
+      color: #555;
+      font-style: italic;
+    }
+
+    main {
+      max-width: 950px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    section {
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      color: #2563eb;
+      border-bottom: 2px solid rgba(37,99,235,0.2);
+      padding-bottom: 4px;
+      display: inline-block;
+      font-size: 1.4rem;
+    }
+
+    ul, ol {
+      text-align: left;
+      margin: 0.5rem auto;
+      max-width: 90%;
+      list-style-type: disc;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    em {
+      color: #666;
+      font-size: 0.9rem;
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    #dlBtn {
+      display: inline-block;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399);
+      background-size: 200% 200%;
+      animation: pulse 6s ease infinite;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s ease;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    #dlBtn:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(255,255,255,0.7);
+      border-top: 2px solid rgba(0,0,0,0.05);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: #7b5dfd;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ name }}</h1>
+    <p class="subtitle">{{ code.replace("-", " | ") }}{% if subtype5 %} — Subtype {{ subtype5 }}{% if subtype_label %} ({{ subtype_label }}){% endif %}{% endif %}</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Personality Summary</h2>
+      <ul>
+        {% for label, text, lvl in traits %}
+          <li><strong>{{ label }} ({{ lvl }})</strong> — {{ text }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Decision-Making Style</h2>
+      <ul>{% for line in decision %}<li>{{ line }}</li>{% endfor %}</ul>
+    </section>
+
+    <section>
+      <h2>Aesthetic & Style</h2>
+      <p>Common themes: {{ ", ".join(aesthetic) }}.</p>
+    </section>
+
+    <section>
+      <h2>Tattoo / Symbolic Expression</h2>
+      <p>Motifs that may resonate symbolically: {{ ", ".join(tattoos) }}.</p>
+    </section>
+
+    <section>
+      <h2>Hobbies & Activities</h2>
+      <ul>{% for h in hobbies %}<li>{{ h }}</li>{% endfor %}</ul>
+    </section>
+
+    <section>
+      <h2>Art & Entertainment</h2>
+      <p><strong>Film:</strong> {{ film }}.</p>
+      <p><strong>Music:</strong> {{ music }}.</p>
+      <p><strong>Visual Art:</strong> {{ visual }}.</p>
+    </section>
+
+    <section>
+      <h2>Intelligence & Cognitive Style</h2>
+      <ul>{% for line in intel %}<li>{{ line }}</li>{% endfor %}</ul>
+    </section>
+
+    <section>
+      <h2>Trauma Interpretation (General)</h2>
+      <ul>{% for line in trauma %}<li>{{ line }}</li>{% endfor %}</ul>
+      <em>This is general information, not medical advice. For diagnosis or treatment, consult a licensed professional. If you or someone you know is in crisis, contact emergency services or a mental health hotline.</em>
+    </section>
+
+    <section>
+      <h2>Ethical Attraction & Relationship Fit</h2>
+      <ul>{% for line in attract %}<li>{{ line }}</li>{% endfor %}</ul>
+    </section>
+
+    <section>
+      <h2>Anti-Manipulation (Defense Skills)</h2>
+      <ul>{% for line in defense %}<li>{{ line }}</li>{% endfor %}</ul>
+    </section>
+
+    <section>
+      <h2>How to Market/Sell Ethically</h2>
+      <ul>{% for line in ads %}<li>{{ line }}</li>{% endfor %}</ul>
+      <em>Use transparency, authenticity, and consent-based language. Avoid pressure tactics — true persuasion comes from understanding, not manipulation.</em>
+    </section>
+
+    <section>
+      <h2>Gift Ideas</h2>
+      <ul>{% for g in gifts %}<li>{{ g }}</li>{% endfor %}</ul>
+    </section>
+
+    <section>
+      <h2>30/90 Day Growth Plan</h2>
+      <ol>
+        <li>Choose one small weekly novelty matched to your energy.</li>
+        <li>Practice a boundary or communication script in low-stakes settings.</li>
+        <li>Document one measurable progress marker each week (journal or app).</li>
+      </ol>
+    </section>
+
+    <section style="text-align:center;">
+      <h2>Download Your Report</h2>
+      <p><a id="dlBtn" href="#">⬇️ Download .docx Report</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Morrowland Psychology Research</p>
+    <p>
+      <a href="https://www.instagram.com/kendallm16" target="_blank">Instagram</a> |
+      <a href="https://www.tiktok.com/@neptunee7777" target="_blank">TikTok</a>
+    </p>
+  </footer>
+
+  <script>
+    document.getElementById("dlBtn").addEventListener("click", ()=>{
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      const sub = params.get("sub");
+      window.location = `/api/download-report?code=${encodeURIComponent(code)}${sub?`&sub=${sub}`:''}`;
+    });
+  </script>
+</body>
+</html>

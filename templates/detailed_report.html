@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ archetype }} – Detailed Big 5 Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3);
+      background-size: 600% 600%;
+      animation: softFlow 50s ease infinite; /* slowed to 50s */
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes softFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 3em auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      padding: 2.5em 3em;
+    }
+
+    h1 {
+      color: #3b82f6;
+      font-size: 2.5em;
+      margin-bottom: 0.4em;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .meta {
+      color: #475569;
+      font-size: 1.05rem;
+      text-align: center;
+    }
+
+    .trait-matrix {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      margin: 0.8rem 0 1.6rem;
+      flex-wrap: wrap;
+    }
+
+    .trait-cell {
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .trait-level {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .trait-letter {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2563eb;
+      letter-spacing: 0.08em;
+    }
+
+    /* Boxes */
+    .ocean-box, .level-box {
+      background: rgba(245, 250, 255, 0.9);
+      border-radius: 15px;
+      padding: 1.5em;
+      margin-bottom: 2em;
+      text-align: left;
+      border: 2px solid rgba(200,200,255,0.4);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+
+    .ocean-box h3, .level-box h3 {
+      color: #1e40af;
+      margin-bottom: 0.8em;
+      text-align: center;
+    }
+
+    .trait-line {
+      margin: 0.4em 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .trait-line span {
+      font-weight: 600;
+      color: #2563eb;
+    }
+
+    h2 {
+      color: #2563eb;
+      margin-top: 1.5em;
+      font-weight: 600;
+    }
+
+    p {
+      white-space: pre-line;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #334155;
+    }
+
+    button {
+      background: linear-gradient(135deg, #4f46e5, #3b82f6, #06b6d4);
+      background-size: 200% 200%;
+      animation: pulse 6s ease infinite;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 1.5em;
+      font-size: 1em;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .quote {
+      margin-top: 2em;
+      font-style: italic;
+      color: #475569;
+      font-size: 1.05em;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    footer a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Archetype Title -->
+    <h1>{{ archetype }}</h1>
+
+    <!-- Traits row + OCEAN letters -->
+    <div class="meta"><strong>Traits:</strong></div>
+    {% set levels = traits.split('-') %}
+    <div class="trait-matrix">
+      {% for lvl in levels %}
+        <div class="trait-cell">
+          <div class="trait-level">{{ lvl }}</div>
+          <div class="trait-letter">{{ ['O','C','E','A','N'][loop.index0] }}</div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- OCEAN Trait Descriptions -->
+    <div class="ocean-box">
+      <h3>OCEAN Personality Framework</h3>
+
+      <div class="trait-line"><span>🧠 Openness:</span>
+        <br><strong>Low:</strong> Prefers familiarity, routine, and practical thinking.  
+        <br><strong>Medium:</strong> Balances curiosity and practicality; open when safe.  
+        <br><strong>High:</strong> Deeply creative, philosophical, and driven by new ideas.
+      </div>
+
+      <div class="trait-line"><span>⚙️ Conscientiousness:</span>
+        <br><strong>Low:</strong> Flexible, spontaneous, but may struggle with consistency.  
+        <br><strong>Medium:</strong> Organized when motivated, relaxed when not under pressure.  
+        <br><strong>High:</strong> Methodical, structured, and highly dependable.
+      </div>
+
+      <div class="trait-line"><span>🌞 Extraversion:</span>
+        <br><strong>Low:</strong> Reserved, reflective, and prefers quiet environments.  
+        <br><strong>Medium:</strong> Socially adaptive—energized by both solitude and company.  
+        <br><strong>High:</strong> Outgoing, expressive, and thrives in social engagement.
+      </div>
+
+      <div class="trait-line"><span>💗 Agreeableness:</span>
+        <br><strong>Low:</strong> Honest but direct; values independence over consensus.  
+        <br><strong>Medium:</strong> Kind but assertive when necessary.  
+        <br><strong>High:</strong> Deeply compassionate, cooperative, and people-oriented.
+      </div>
+
+      <div class="trait-line"><span>🌧 Neuroticism:</span>
+        <br><strong>Low:</strong> Calm, emotionally steady, resilient under stress.  
+        <br><strong>Medium:</strong> Aware of emotions but maintains balance.  
+        <br><strong>High:</strong> Emotionally intense, self-aware, and deeply affected by stress or beauty.
+      </div>
+    </div>
+
+    <!-- Detailed Report Sections -->
+    {% for title, text in sections.items() %}
+      <h2>{{ title }}</h2>
+      <p>{{ text }}</p>
+    {% endfor %}
+
+    <!-- Quote -->
+    <p class="quote">{{ quote }}</p>
+
+    <!-- Download Button -->
+    <form action="/api/download-report" method="get" style="text-align:center;">
+      <input type="hidden" name="code" value="{{ traits|replace(' | ', '-') }}"/>
+      <button type="submit">Download .docx Report</button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Morrowland Psychology Research</p>
+    <div class="socials">
+      <a href="https://www.instagram.com/morr.ow777777" target="_blank">Instagram</a> |
+      <a href="https://www.tiktok.com/@morrowland57" target="_blank">TikTok</a>
+    </div>
+  </footer>
+</body>
+</html>

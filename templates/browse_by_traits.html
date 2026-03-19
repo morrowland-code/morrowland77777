@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse by Big Five Traits</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3, #bafff3);
+      background-size: 800% 800%;
+      animation: softFlow 20s ease infinite;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    @keyframes softFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 4em auto;
+      background: rgba(255,255,255,0.92);
+      padding: 2em;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .field {
+      margin: 1em 0;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.4em;
+      font-weight: bold;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 1.5em;
+      border: none;
+      background: #b6ff8c;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Browse by Big Five Traits</h1>
+    <p>Select one level for each trait to open the matching archetype report.</p>
+
+    <form method="POST" action="/select-by-traits">
+      <div class="field">
+        <label for="openness">Openness</label>
+        <select name="openness" id="openness" required>
+          <option value="">Select...</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="conscientiousness">Conscientiousness</label>
+        <select name="conscientiousness" id="conscientiousness" required>
+          <option value="">Select...</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="extraversion">Extraversion</label>
+        <select name="extraversion" id="extraversion" required>
+          <option value="">Select...</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="agreeableness">Agreeableness</label>
+        <select name="agreeableness" id="agreeableness" required>
+          <option value="">Select...</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="neuroticism">Neuroticism</label>
+        <select name="neuroticism" id="neuroticism" required>
+          <option value="">Select...</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <button type="submit">Open Archetype Report</button>
+    </form>
+  </div>
+</body>
+</html>

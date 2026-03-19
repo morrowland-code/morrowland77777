@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlock Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #a4ffb0, #c4a1ff, #fff6a1, #ff9ff3, #bafff3);
+      background-size: 800% 800%;
+      animation: softFlow 20s ease infinite;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    @keyframes softFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 4em auto;
+      background: rgba(255,255,255,0.94);
+      padding: 2em;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    input, button {
+      width: 100%;
+      max-width: 420px;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 10px;
+      margin: 0.5em auto;
+      display: block;
+    }
+
+    input {
+      border: 1px solid #ccc;
+    }
+
+    button {
+      border: none;
+      background: #b6ff8c;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .muted {
+      color: #666;
+      margin-top: 1em;
+    }
+
+    .error {
+      color: #b00020;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Unlock Your Report</h1>
+    <p><strong>{{ archetype }}</strong></p>
+    <p>{{ traits }}</p>
+    <p>Enter a free code or unlock the full report for <strong>$0.99</strong>.</p>
+
+    <input id="freeCodeInput" type="text" placeholder="Enter free code" />
+    <button id="freeCodeBtn">Unlock with Free Code</button>
+
+    <p class="muted">— or —</p>
+
+    <button id="buyReportBtn">$0.99 – Unlock Report</button>
+
+    <p id="errorMsg" class="error"></p>
+  </div>
+
+  <script>
+    const freeCodeBtn = document.getElementById("freeCodeBtn");
+    const buyReportBtn = document.getElementById("buyReportBtn");
+    const freeCodeInput = document.getElementById("freeCodeInput");
+    const errorMsg = document.getElementById("errorMsg");
+
+    freeCodeBtn.addEventListener("click", async () => {
+      errorMsg.textContent = "";
+      const code = freeCodeInput.value.trim();
+
+      if (!code) {
+        errorMsg.textContent = "Please enter a free code.";
+        return;
+      }
+
+      try {
+        const resp = await fetch("/verify-free-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await resp.json();
+
+        if (data.valid) {
+          window.location.href = "/report";
+        } else {
+          errorMsg.textContent = data.error || "Invalid or expired code.";
+        }
+      } catch (e) {
+        errorMsg.textContent = "Something went wrong.";
+      }
+    });
+
+    buyReportBtn.addEventListener("click", () => {
+      window.location.href = "/create-checkout-session";
+    });
+  </script>
+</body>
+</html>
