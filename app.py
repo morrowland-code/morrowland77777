@@ -33,68 +33,102 @@ print(f"[CONFIG] FLASK_ENV={FLASK_ENV}, DOMAIN={DOMAIN}, USE_SECURE_COOKIES={USE
 # ------------------------------------------------------------------
 # 2️⃣ Parse morrowland 243.docx
 # ------------------------------------------------------------------
+
+
+
 def load_detailed_archetypes_text(file_path: str):
     if not os.path.exists(file_path):
         print(f"[ERROR] File not found: {file_path}")
         return {}, {}, {}
 
     with open(file_path, "r", encoding="utf-8") as f:
-        text = f.read()
+        raw = f.read()
 
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    # Split on the marker
+    blocks = [b.strip() for b in raw.split("====================") if b.strip()]
 
+    by_code = {}
+    by_name = {}
+    code_to_name = {}
+    duplicates = []
 
     header_re = re.compile(
-        r"(?i)openness\s*[:\-–—]?\s*(low|medium|high).*?"
-        r"conscientiousness\s*[:\-–—]?\s*(low|medium|high).*?"
-        r"extraversion\s*[:\-–—]?\s*(low|medium|high).*?"
-        r"agreeableness\s*[:\-–—]?\s*(low|medium|high).*?"
-        r"neuroticism\s*[:\-–—]?\s*(low|medium|high)"
+        r"Openness\s*:\s*(Low|Medium|High)\s*\|\s*"
+        r"Conscientiousness\s*:\s*(Low|Medium|High)\s*\|\s*"
+        r"Extraversion\s*:\s*(Low|Medium|High)\s*\|\s*"
+        r"Agreeableness\s*:\s*(Low|Medium|High)\s*\|\s*"
+        r"Neuroticism\s*:\s*(Low|Medium|High)",
+        re.IGNORECASE
     )
-    archetype_re = re.compile(r"(?i)^archetype\s*[:\-–—]?\s*(.+?)\s*$")
 
-    by_code, by_name, code_to_name = {}, {}, {}
-    current_code, current_name, buffer = None, None, []
+    archetype_re = re.compile(
+        r"Archetype\s*:\s*(.+?)(?:\s*\(([HML]{5})\))?\s*$",
+        re.IGNORECASE
+    )
 
-    def flush():
-        nonlocal current_code, current_name, buffer
-        if current_code and buffer:
-            text = "\n".join(buffer).strip()
-            by_code[current_code] = text
-            if current_name:
-                by_name[current_name] = text
-                code_to_name[current_code] = current_name
-        buffer = []
+    for idx, block in enumerate(blocks, start=1):
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if len(lines) < 2:
+            print(f"[WARN] Skipping short block #{idx}")
+            continue
 
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        m_header = header_re.search(line)
-        if m_header:
-            flush()
-            O, C, E, A, N_ = [x.capitalize() for x in m_header.groups()]
-            current_code = f"{O}-{C}-{E}-{A}-{N_}"
-            current_name = None
+        trait_line = None
+        archetype_line = None
 
-            # look ahead a couple lines for "Archetype: Name"
-            for j in range(1, 4):
-                if i + j >= len(lines):
-                    break
-                m_name = archetype_re.match(lines[i + j].strip())
-                if m_name:
-                    current_name = m_name.group(1).strip()
-                    i += j
-                    break
+        for line in lines:
+            if not trait_line and header_re.search(line):
+                trait_line = line
+            if not archetype_line and archetype_re.search(line):
+                archetype_line = line
 
-            if not current_name:
-                current_name = f"Unknown_{i}"
-        else:
-            if current_code:
-                buffer.append(lines[i])
-        i += 1
+        if not trait_line:
+            print(f"[WARN] Could not parse trait line in block #{idx}: {lines[:3]}")
+            continue
 
-    flush()
+        if not archetype_line:
+            print(f"[WARN] Could not parse archetype line in block #{idx}: {lines[:3]}")
+            continue
+
+        m_header = header_re.search(trait_line)
+        O, C, E, A, N_ = [x.capitalize() for x in m_header.groups()]
+        code = f"{O}-{C}-{E}-{A}-{N_}"
+
+        m_name = archetype_re.search(archetype_line)
+        archetype_name = m_name.group(1).strip()
+
+        # Keep the full block text exactly as report content
+        report_text = "\n".join(lines).strip()
+
+        if code in by_code:
+            duplicates.append((code, code_to_name.get(code), archetype_name))
+            print(f"[DUPLICATE CODE] {code}: '{code_to_name.get(code)}' overwritten by '{archetype_name}'")
+
+        by_code[code] = report_text
+        by_name[archetype_name] = report_text
+        code_to_name[code] = archetype_name
+
+    # Build all 243 possible codes
+    levels = ["Low", "Medium", "High"]
+    all_codes = {
+        f"{o}-{c}-{e}-{a}-{n}"
+        for o in levels for c in levels for e in levels for a in levels for n in levels
+    }
+
+    loaded_codes = set(by_code.keys())
+    missing_codes = sorted(all_codes - loaded_codes)
+
     print(f"[✅ SUCCESS] Loaded {len(by_code)} archetypes from {os.path.basename(file_path)}")
+
+    if duplicates:
+        print(f"[⚠️ DUPLICATES FOUND: {len(duplicates)}]")
+        for code, old_name, new_name in duplicates:
+            print(f"   {code}: '{old_name}' -> '{new_name}'")
+
+    if missing_codes:
+        print(f"[⚠️ MISSING CODES: {len(missing_codes)}]")
+        for code in missing_codes:
+            print(f"   {code}")
+
     return by_code, by_name, code_to_name
 
 # ------------------------------------------------------------------
