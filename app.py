@@ -3,6 +3,7 @@ import os, re, json, secrets
 from docx import Document
 from io import BytesIO
 from dotenv import load_dotenv
+from flask import send_from_directory
 import stripe
 
 # ------------------------------------------------------------------
@@ -217,6 +218,13 @@ def inject_socials():
         tiktok_url="https://www.tiktok.com/@neptunee7777",
         instagram_url="https://www.instagram.com/kendallm16",
     )
+
+
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory('static', 'robots.txt')
+
+
 
 # ------------------------------------------------------------------
 # 6️⃣ Routes
